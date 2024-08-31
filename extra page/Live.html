@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pothole Detector</title>
+    <style>
+        /* Reset some default styles */
+        body, h1, button, video {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff; /* White background */
+            color: #333;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 90%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            margin: 20px auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid #007bff; /* Futuristic blue border */
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #007bff, #00d2d3); /* Futuristic blue gradient */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #0056b3, #00a3a4); /* Darker hover effect */
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #d9534f;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive adjustments for small screens */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            video {
+                max-width: 100%;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+
+            #result {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container"> <!-- Main container -->
+        <h1>Pothole Detector</h1> <!-- Title -->
+        <div class="camera-section"> <!-- Section for camera and buttons -->
+            <video id="video" autoplay></video> <!-- Video stream element -->
+            <button id="captureButton">Capture Image</button> <!-- Capture button -->
+            <button id="uploadButton" style="display:none;">Upload Image</button> <!-- Upload button, hidden initially -->
+            <div id="result"></div> <!-- Result display -->
+        </div>
+    </div>
+    <script>
+        // Access the device camera and stream video to the video element
+        async function startCamera() {
+            const video = document.getElementById('video');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        }
+
+        // Capture image from the video element
+        function captureImage() {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+
+            const imageData = canvas.toDataURL('image/png'); // Convert canvas to Base64 image
+            return imageData; // Return Base64 image data
+        }
+
+        // Upload the captured image to the backend for pothole detection
+        async function uploadImage() {
+            const imageData = captureImage(); // Capture image
+            const response = await fetch('/api/detect-pothole', {
+                method: 'POST',
+                body: JSON.stringify({ image: imageData }), // Send Base64 image to backend
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json(); // Get the result from backend
+            document.getElementById('result').innerText = result.potholeDetected
+                ? 'Pothole detected!' // Display result
+                : 'No pothole detected.';
+        }
+
+        // Event listener for the capture button
+        document.getElementById('captureButton').addEventListener('click', () => {
+            uploadImage(); // Capture and upload image on button click
+        });
+
+        // Start the camera when the page loads
+        startCamera();
+    </script>
+</body>
+</html>
