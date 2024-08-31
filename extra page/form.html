@@ -218,12 +218,12 @@
     }
 
     .form-inner form .btn input[type="submit"] {
-      height: 40px; /* Reduced height */
+      height: 40px;
       width: 100%;
       background: #007bff;
       border: none;
       color: #fff;
-      font-size: 16px; /* Smaller font size */
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       position: relative;
@@ -257,9 +257,9 @@
       </div>
       <div class="form-inner">
         <!-- Login Form -->
-        <form action="Live.html" class="login">
+        <form action="option.html" class="login">
           <div class="field">
-            <input type="text" placeholder="Email Address" required>
+            <input type="text" placeholder="Username" required>
           </div>
           <div class="field">
             <input type="password" placeholder="Password" required>
@@ -272,14 +272,20 @@
             <input type="submit" value="Login">
           </div>
           <div class="signup-link">
-            Don't Have Account? <a href="">Create A New</a>
+            Don't Have Account? <a href="#">Create A New</a>
           </div>
         </form>
 
         <!-- Sign Up Form -->
-        <form action="/Live Feed/index.html" class="signup">
+        <form action="option.html" class="signup">
           <div class="field">
-            <input type="text" placeholder="Email Address" required>
+            <input type="text" placeholder="First Name" required>
+          </div>
+          <div class="field">
+            <input type="text" placeholder="Last Name" required>
+          </div>
+          <div class="field">
+            <input type="email" placeholder="Email Address" required>
           </div>
           <div class="field">
             <input type="password" placeholder="Password" required>
@@ -308,13 +314,8 @@
     };
 
     loginBtn.onclick = () => {
-      loginForm.style.marginLeft = "0%";
-      loginText.style.marginLeft = "0%";
-    };
-
-    signupLink.onclick = () => {
-      signupBtn.click();
-      return false;
+      loginForm.style.marginLeft = "0";
+      loginText.style.marginLeft = "0";
     };
   </script>
 </body>

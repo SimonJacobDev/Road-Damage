@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pothole Detector</title>
+    <style>
+        /* Reset some default styles */
+        body, h1, button, video, input {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff; /* White background */
+            color: #333;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #007bff, #00d2d3); /* Futuristic blue gradient */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease, transform 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #0056b3, #00a3a4); /* Darker hover effect */
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #uploadInput {
+            display: none;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #d9534f;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive adjustments for small screens */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+                width: 90%;
+            }
+
+            #result {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container"> <!-- Main container -->
+        <h1>Pothole Detector</h1> <!-- Title -->
+        <div class="button-section"> <!-- Section for buttons -->
+            <button id="liveDetectionButton">Start Live Detection</button> <!-- Live detection button -->
+            <button id="uploadButton">Upload Image</button> <!-- Upload button -->
+            <input type="file" id="uploadInput" accept="image/*"> <!-- Hidden file input for image upload -->
+            <div id="result"></div> <!-- Result display -->
+        </div>
+    </div>
+    <script>
+        // Redirect to Live.html when the live detection button is clicked
+        document.getElementById('liveDetectionButton').addEventListener('click', () => {
+            window.location.href = "Live.html"; // Redirect to Live.html
+        });
+
+        // Handle image upload when the upload button is clicked
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            document.getElementById('uploadInput').click(); // Trigger file input click
+        });
+
+        // Process the uploaded image
+        document.getElementById('uploadInput').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await fetch('/api/detect-pothole', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json(); // Get the result from backend
+                document.getElementById('result').innerText = result.potholeDetected
+                    ? 'Pothole detected!' // Display result
+                    : 'No pothole detected.';
+            }
+        });
+    </script>
+</body>
+</html>
