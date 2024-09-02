@@ -5,27 +5,27 @@ const tf = require('@tensorflow/tfjs-node');
 const { loadGraphModel } = require('@tensorflow/tfjs-node');
 
 const app = express();
-app.use(bodyParser.json({ limit: '10mb' })); // Support for large JSON payloads
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // Load the pre-trained model
 let model;
 async function loadModel() {
-    model = await loadGraphModel('file://path/to/your/model/model.json'); // Load your model
+    model = await loadGraphModel('file://path/to/your/model/model.json');
 }
 loadModel();
 
 app.post('/api/detect-pothole', async (req, res) => {
     const { image } = req.body;
 
-    // Decode the Base64 image
+    // Decode the image
     const base64Data = image.replace(/^data:image\/png;base64,/, "");
     const buffer = Buffer.from(base64Data, 'base64');
 
     // Process the image and detect pothole
     const imageTensor = tf.node.decodeImage(buffer);
-    const resizedTensor = tf.image.resizeBilinear(imageTensor, [224, 224]); // Resize image to fit model input
-    const prediction = model.predict(resizedTensor.expandDims(0)); // Get prediction from model
-    const result = prediction.arraySync()[0][0] > 0.5; // Adjust threshold as needed
+    const resizedTensor = tf.image.resizeBilinear(imageTensor, [224, 224]); // Adjust size as needed
+    const prediction = model.predict(resizedTensor.expandDims(0));
+    const result = prediction.arraySync()[0][0] > 0.5; // Adjust based on your model
 
     // Send email if pothole detected
     if (result) {
@@ -42,7 +42,7 @@ app.post('/api/detect-pothole', async (req, res) => {
             to: 'recipient-email@gmail.com',
             subject: 'Pothole Detected',
             text: 'A pothole has been detected. Please check the attached image.',
-            attachments: [{ filename: 'pothole.png', content: buffer }] // Attach image
+            attachments: [{ filename: 'pothole.png', content: buffer }]
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -52,7 +52,7 @@ app.post('/api/detect-pothole', async (req, res) => {
         });
     }
 
-    res.json({ potholeDetected: result }); // Send result back to frontend
+    res.json({ potholeDetected: result });
 });
 
 app.listen(3000, () => {
